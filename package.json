@@ -1,0 +1,47 @@
+{
+  "name": "react-simple-masonry",
+  "version": "0.1.0",
+  "description": "react-simple-masonry React component",
+  "main": "lib/index.js",
+  "jsnext:main": "es6/index.js",
+  "files": [
+    "css",
+    "es6",
+    "lib",
+    "umd"
+  ],
+  "scripts": {
+    "build": "nwb build",
+    "clean": "nwb clean",
+    "start": "nwb serve",
+    "test": "nwb test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awkward/react-simple-masonry.git"
+  },
+  "dependencies": {
+    "simple-masonry-layout": "^0.1.1"
+  },
+  "peerDependencies": {
+    "react": "0.14.x"
+  },
+  "devDependencies": {
+    "nwb": "0.7.x",
+    "react": "0.14.x",
+    "react-dom": "0.14.x"
+  },
+  "author": {
+    "name": "John van de Water",
+    "email": "john@madeawkward.com",
+    "url": "http://github.com/jchn"
+  }, 
+  "homepage": "https://github.com/awkward/react-simple-masonry#readme",
+  "license": "MIT",
+  "repository": "",
+  "keywords": [
+    "react-component",
+    "masonry",
+    "layout"
+  ]
+}
