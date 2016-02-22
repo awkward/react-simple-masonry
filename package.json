@@ -1,5 +1,5 @@
 {
-  "name": "react-simple-masonry",
+  "name": "@awkward/react-simple-masonry",
   "version": "0.1.0",
   "description": "react-simple-masonry React component",
   "main": "lib/index.js",
