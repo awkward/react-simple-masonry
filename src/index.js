@@ -44,6 +44,16 @@ export default React.createClass({
       })
     })
 
-    return (<div>{childNodes}</div>)
+    let height = 0
+
+    if (rectangles.length) {
+      height = rectangles
+        .map((r) => r.height + r.y)
+        .sort((r1, r2) => (r2 - r1))[0]
+    }
+
+    return (
+      <div style={{ width: `${this.props.width}px`, height: `${height}px`, position: 'relative' }}>{childNodes}</div>
+    )
   }
 })

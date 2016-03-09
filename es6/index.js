@@ -47,9 +47,19 @@ export default React.createClass({
       }, rectangle));
     });
 
+    var height = 0;
+
+    if (rectangles.length) {
+      height = rectangles.map(function (r) {
+        return r.height + r.y;
+      }).sort(function (r1, r2) {
+        return r2 - r1;
+      })[0];
+    }
+
     return React.createElement(
       'div',
-      null,
+      { style: { width: this.props.width + 'px', height: height + 'px', position: 'relative' } },
       childNodes
     );
   }
