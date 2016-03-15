@@ -1,5 +1,5 @@
 /*!
- * @awkward/react-simple-masonry 0.1.1 - https://github.com/awkward/react-simple-masonry#readme
+ * @awkward/react-simple-masonry 0.3.0 - https://github.com/awkward/react-simple-masonry#readme
  * MIT Licensed
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -85,22 +85,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	  displayName: 'MasonryLayout',
 
 	  propTypes: {
-	    gutter: _react2['default'].PropTypes.number,
 	    columns: _react2['default'].PropTypes.number,
-	    width: _react2['default'].PropTypes.number
+	    width: _react2['default'].PropTypes.number,
+	    gutter: _react2['default'].PropTypes.number,
+	    gutterX: _react2['default'].PropTypes.number,
+	    gutterY: _react2['default'].PropTypes.number
 	  },
 
 	  getDefaultProps: function getDefaultProps() {
 	    return {
-	      gutter: 5,
 	      columns: 15,
-	      width: 980
+	      width: 980,
+	      gutter: 15
 	    };
 	  },
 
 	  /* Returns an array of rectangles which can be used to map to child elements */
-	  calculateRectangles: function calculateRectangles(dimensions, numColumns, totalWidth, gutter) {
-	    return _simpleMasonryLayout2['default'].generateRectangles(dimensions, numColumns, totalWidth, gutter);
+	  calculateRectangles: function calculateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY) {
+	    return _simpleMasonryLayout2['default'].generateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY);
 	  },
 
 	  render: function render() {
@@ -111,7 +113,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 	    });
 
-	    var rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter);
+	    var rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter, this.props.gutterX, this.props.gutterY);
 
 	    var childNodes = _react2['default'].Children.map(this.props.children, function (el, i) {
 	      var rectangle = rectangles[i];
@@ -18607,31 +18609,34 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var LayoutEngine = {}
 
-	LayoutEngine.generateRectangles = function (dimensionsArray, numColumns, totalWidth, gutter) {
+	LayoutEngine.generateRectangles = function (dimensionsArray, numColumns, totalWidth, gutter, gutterX, gutterY) {
 	  gutter = gutter || 0
 
+	  gutterX = gutterX || gutter 
+	  gutterY = gutterY || gutter
+
 	  return dimensionsArray
-	    .map(LayoutEngine.__scaleRectangles(numColumns, totalWidth, gutter))
-	    .map(LayoutEngine.__translateRectanglesForNColumns(numColumns, totalWidth, gutter))
+	    .map(LayoutEngine.__scaleRectangles(numColumns, totalWidth, gutterX))
+	    .map(LayoutEngine.__translateRectanglesForNColumns(numColumns, totalWidth, gutterX, gutterY))
 	}
 
-	LayoutEngine.__translateRectanglesForNColumns = function (numColumns, totalWidth, gutter) {
+	LayoutEngine.__translateRectanglesForNColumns = function (numColumns, totalWidth, gutterX, gutterY) {
 	  /* Translate rectangles into position */
 
 	  return function (rectangle, i, allRects) {
 	    if (!i) {
 	      // first round
-	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, 0, 0, gutter)
+	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, 0, 0, gutterY)
 	      return rectangle
 	    } else if (i < numColumns) {
 	      // first row
-	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, LayoutEngine.__widthSingleColumn(numColumns, totalWidth, gutter) * i + gutter * i, 0, gutter)
+	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, LayoutEngine.__widthSingleColumn(numColumns, totalWidth, gutterX) * i + gutterX * i, 0, gutterY)
 	      rectangle.flagged = false
 	      return rectangle
 	    } else {
 	      // place rects
 	      var placeAfter = LayoutEngine.__placeAfterRectangle(allRects)
-	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, placeAfter.x, (placeAfter.height + placeAfter.y), gutter)
+	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, placeAfter.x, (placeAfter.height + placeAfter.y), gutterY)
 	      placeAfter.flagged = true
 	      return rectangle
 	    }
@@ -18639,13 +18644,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	/* Scale all rectangles to fit into a single column */
-	LayoutEngine.__scaleRectangles = function (numColumns, totalWidth, gutter) {
+	LayoutEngine.__scaleRectangles = function (numColumns, totalWidth, gutterX) {
 	  return function (rectangle) {
 	    var w = rectangle.width
 	    var h = rectangle.height
 	    
 	    var factor = w / h
-	    var width = LayoutEngine.__widthSingleColumn(numColumns, totalWidth, gutter)
+	    var width = LayoutEngine.__widthSingleColumn(numColumns, totalWidth, gutterX)
 	    var height = width / factor
 
 	    return {
@@ -18658,8 +18663,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}
 
-	LayoutEngine.__placeRectangleAt = function (rectangle, x, y, gutter) {
-	  if (y) y += gutter
+	LayoutEngine.__placeRectangleAt = function (rectangle, x, y, gutterY) {
+	  if (y) y += gutterY
 
 	  return Object.assign(rectangle, {x: x, y: y, flagged: false})
 	}

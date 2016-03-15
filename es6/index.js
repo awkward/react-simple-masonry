@@ -21,13 +21,14 @@ export default React.createClass({
   getDefaultProps: function getDefaultProps() {
     return {
       columns: 15,
-      width: 980
+      width: 980,
+      gutter: 15
     };
   },
 
   /* Returns an array of rectangles which can be used to map to child elements */
-  calculateRectangles: function calculateRectangles(dimensions, numColumns, totalWidth, gutter) {
-    return LayoutEngine.generateRectangles(dimensions, numColumns, totalWidth, gutter);
+  calculateRectangles: function calculateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY) {
+    return LayoutEngine.generateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY);
   },
 
   render: function render() {
@@ -38,7 +39,7 @@ export default React.createClass({
       };
     });
 
-    var rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter || 0, this.props.gutterX, this.props.gutterY);
+    var rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter, this.props.gutterX, this.props.gutterY);
 
     var childNodes = React.Children.map(this.props.children, function (el, i) {
       var rectangle = rectangles[i];
