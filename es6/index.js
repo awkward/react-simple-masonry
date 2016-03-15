@@ -11,14 +11,15 @@ export default React.createClass({
   displayName: 'MasonryLayout',
 
   propTypes: {
-    gutter: React.PropTypes.number,
     columns: React.PropTypes.number,
-    width: React.PropTypes.number
+    width: React.PropTypes.number,
+    gutter: React.PropTypes.number,
+    gutterX: React.PropTypes.number,
+    gutterY: React.PropTypes.number
   },
 
   getDefaultProps: function getDefaultProps() {
     return {
-      gutter: 5,
       columns: 15,
       width: 980
     };
@@ -37,7 +38,7 @@ export default React.createClass({
       };
     });
 
-    var rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter);
+    var rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter || 0, this.props.gutterX, this.props.gutterY);
 
     var childNodes = React.Children.map(this.props.children, function (el, i) {
       var rectangle = rectangles[i];

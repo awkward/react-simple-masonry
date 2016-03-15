@@ -21,7 +21,7 @@
     "url": "git+https://github.com/awkward/react-simple-masonry.git"
   },
   "dependencies": {
-    "simple-masonry-layout": "^0.1.2"
+    "simple-masonry-layout": "^0.2.0"
   },
   "peerDependencies": {
     "react": "0.14.x"
