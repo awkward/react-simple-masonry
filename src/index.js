@@ -7,22 +7,24 @@ export default React.createClass({
   displayName: 'MasonryLayout',
 
   propTypes: {
-    gutter: React.PropTypes.number,
     columns: React.PropTypes.number,
-    width: React.PropTypes.number
+    width: React.PropTypes.number,
+    gutter: React.PropTypes.number,
+    gutterX: React.PropTypes.number,
+    gutterY: React.PropTypes.number
   },
 
   getDefaultProps: function () {
     return {
-      gutter: 5,
       columns: 15,
-      width: 980
+      width: 980,
+      gutter: 15
     }
   },
 
   /* Returns an array of rectangles which can be used to map to child elements */
-  calculateRectangles: function (dimensions, numColumns, totalWidth, gutter) {
-    return LayoutEngine.generateRectangles(dimensions, numColumns, totalWidth, gutter)
+  calculateRectangles: function (dimensions, numColumns, totalWidth, gutter, gutterX, gutterY) {
+    return LayoutEngine.generateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY)
   },
 
   render() {
@@ -33,7 +35,7 @@ export default React.createClass({
       }
     })
 
-    const rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter)
+    const rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter, this.props.gutterX, this.props.gutterY)
 
     const childNodes = React.Children.map(this.props.children, (el, i) => {
       const rectangle = rectangles[i]
