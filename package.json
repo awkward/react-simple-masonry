@@ -21,7 +21,7 @@
     "url": "git+https://github.com/awkward/react-simple-masonry.git"
   },
   "dependencies": {
-    "simple-masonry-layout": "^0.2.0"
+    "simple-masonry-layout": "^1.1.0"
   },
   "peerDependencies": {
     "react": "0.14.x"
@@ -35,10 +35,9 @@
     "name": "John van de Water",
     "email": "john@madeawkward.com",
     "url": "http://github.com/jchn"
-  }, 
+  },
   "homepage": "https://github.com/awkward/react-simple-masonry#readme",
   "license": "MIT",
-  "repository": "",
   "keywords": [
     "react-component",
     "masonry",

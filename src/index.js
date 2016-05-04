@@ -35,7 +35,14 @@ export default React.createClass({
       }
     })
 
-    const rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter, this.props.gutterX, this.props.gutterY)
+    const rectangles = this.calculateRectangles({ 
+      dimensions, 
+      columns: this.props.columns, 
+      width: this.props.width, 
+      gutter: this.props.gutter, 
+      gutterX: this.props.gutterX, 
+      gutterY: this.props.gutterY 
+    })
 
     const childNodes = React.Children.map(this.props.children, (el, i) => {
       const rectangle = rectangles[i]
