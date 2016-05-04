@@ -1,5 +1,5 @@
 /*!
- * @awkward/react-simple-masonry 0.3.0 - https://github.com/awkward/react-simple-masonry#readme
+ * @awkward/react-simple-masonry 0.4.0 - https://github.com/awkward/react-simple-masonry#readme
  * MIT Licensed
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -89,14 +89,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    width: _react2['default'].PropTypes.number,
 	    gutter: _react2['default'].PropTypes.number,
 	    gutterX: _react2['default'].PropTypes.number,
-	    gutterY: _react2['default'].PropTypes.number
+	    gutterY: _react2['default'].PropTypes.number,
+	    maxHeight: _react2['default'].PropTypes.number
 	  },
 
 	  getDefaultProps: function getDefaultProps() {
 	    return {
 	      columns: 15,
 	      width: 980,
-	      gutter: 15
+	      gutter: 15,
+	      maxHeight: 0
 	    };
 	  },
 
@@ -113,7 +115,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 	    });
 
-	    var rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter, this.props.gutterX, this.props.gutterY);
+	    var rectangles = this.calculateRectangles({
+	      dimensions: dimensions,
+	      columns: this.props.columns,
+	      width: this.props.width,
+	      gutter: this.props.gutter,
+	      gutterX: this.props.gutterX,
+	      gutterY: this.props.gutterY,
+	      maxHeight: this.props.maxHeight
+	    });
 
 	    var childNodes = _react2['default'].Children.map(this.props.children, function (el, i) {
 	      var rectangle = rectangles[i];
@@ -18609,15 +18619,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var LayoutEngine = {}
 
-	LayoutEngine.generateRectangles = function (dimensionsArray, numColumns, totalWidth, gutter, gutterX, gutterY) {
-	  gutter = gutter || 0
+	LayoutEngine.generateRectangles = function (options) {
 
-	  gutterX = gutterX || gutter 
-	  gutterY = gutterY || gutter
+	  if (!options.dimensions) throw new Error('No dimensions option given for Masonry Layout')
 
-	  return dimensionsArray
-	    .map(LayoutEngine.__scaleRectangles(numColumns, totalWidth, gutterX))
-	    .map(LayoutEngine.__translateRectanglesForNColumns(numColumns, totalWidth, gutterX, gutterY))
+	  options.gutter = options.gutter || 0
+	  options.gutterX = options.gutterX || options.gutter 
+	  options.gutterY = options.gutterY || options.gutter
+	  options.width = options.width || 800
+	  options.columns = options.columns || 3
+	  options.maxHeight = options.maxHeight || 0
+
+	  return options.dimensions
+	    .map(LayoutEngine.__scaleRectangles(options.columns, options.width, options.gutterX, options.maxHeight))
+	    .map(LayoutEngine.__translateRectanglesForNColumns(options.columns, options.width, options.gutterX, options.gutterY))
 	}
 
 	LayoutEngine.__translateRectanglesForNColumns = function (numColumns, totalWidth, gutterX, gutterY) {
@@ -18644,7 +18659,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	/* Scale all rectangles to fit into a single column */
-	LayoutEngine.__scaleRectangles = function (numColumns, totalWidth, gutterX) {
+	LayoutEngine.__scaleRectangles = function (numColumns, totalWidth, gutterX, maxHeight) {
 	  return function (rectangle) {
 	    var w = rectangle.width
 	    var h = rectangle.height
@@ -18652,6 +18667,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var factor = w / h
 	    var width = LayoutEngine.__widthSingleColumn(numColumns, totalWidth, gutterX)
 	    var height = width / factor
+
+	    // Set max height
+	    if (maxHeight && maxHeight < height) {
+	      height = maxHeight
+	    }
 
 	    return {
 	      width: Math.floor(width),
@@ -18691,7 +18711,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	if (typeof module === 'object' && module.exports) {
 	  module.exports = LayoutEngine
 	} else {
-	  window.LayoutEngine = LayoutEngine
+	  window.SimpleMasonry = LayoutEngine
 	}
 
 
