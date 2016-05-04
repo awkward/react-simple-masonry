@@ -15,14 +15,16 @@ export default React.createClass({
     width: React.PropTypes.number,
     gutter: React.PropTypes.number,
     gutterX: React.PropTypes.number,
-    gutterY: React.PropTypes.number
+    gutterY: React.PropTypes.number,
+    maxHeight: React.PropTypes.number
   },
 
   getDefaultProps: function getDefaultProps() {
     return {
       columns: 15,
       width: 980,
-      gutter: 15
+      gutter: 15,
+      maxHeight: 0
     };
   },
 
@@ -39,7 +41,15 @@ export default React.createClass({
       };
     });
 
-    var rectangles = this.calculateRectangles(dimensions, this.props.columns, this.props.width, this.props.gutter, this.props.gutterX, this.props.gutterY);
+    var rectangles = this.calculateRectangles({
+      dimensions: dimensions,
+      columns: this.props.columns,
+      width: this.props.width,
+      gutter: this.props.gutter,
+      gutterX: this.props.gutterX,
+      gutterY: this.props.gutterY,
+      maxHeight: this.props.maxHeight
+    });
 
     var childNodes = React.Children.map(this.props.children, function (el, i) {
       var rectangle = rectangles[i];
