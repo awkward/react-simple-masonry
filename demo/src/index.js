@@ -8,7 +8,7 @@ let Demo = React.createClass({
   render() {
     return <div>
       <h1>simple-masonry-layout Demo</h1>
-      <Component width={980} columns={4} gutterX={50} gutterY={50}>
+      <Component width={980} columns={4} gutterX={50} gutterY={50} maxHeight={550}>
 
         <Block original-width={300} original-height={900}>
             <div className="block"></div>
