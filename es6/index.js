@@ -16,7 +16,8 @@ export default React.createClass({
     gutter: React.PropTypes.number,
     gutterX: React.PropTypes.number,
     gutterY: React.PropTypes.number,
-    maxHeight: React.PropTypes.number
+    maxHeight: React.PropTypes.number,
+    collapsing: React.PropTypes.bool
   },
 
   getDefaultProps: function getDefaultProps() {
@@ -24,7 +25,8 @@ export default React.createClass({
       columns: 15,
       width: 980,
       gutter: 15,
-      maxHeight: 0
+      maxHeight: 0,
+      collapsing: true
     };
   },
 
@@ -48,7 +50,8 @@ export default React.createClass({
       gutter: this.props.gutter,
       gutterX: this.props.gutterX,
       gutterY: this.props.gutterY,
-      maxHeight: this.props.maxHeight
+      maxHeight: this.props.maxHeight,
+      collapsing: this.props.collapsing
     });
 
     var childNodes = React.Children.map(this.props.children, function (el, i) {
