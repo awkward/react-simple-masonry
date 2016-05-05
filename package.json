@@ -1,6 +1,6 @@
 {
   "name": "@awkward/react-simple-masonry",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "react-simple-masonry React component",
   "main": "lib/index.js",
   "jsnext:main": "es6/index.js",
@@ -21,7 +21,7 @@
     "url": "git+https://github.com/awkward/react-simple-masonry.git"
   },
   "dependencies": {
-    "simple-masonry-layout": "^1.1.0"
+    "simple-masonry-layout": "^1.2.0"
   },
   "peerDependencies": {
     "react": "0.14.x"

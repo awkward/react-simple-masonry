@@ -1,5 +1,5 @@
 /*!
- * @awkward/react-simple-masonry 0.4.0 - https://github.com/awkward/react-simple-masonry#readme
+ * @awkward/react-simple-masonry 0.5.0 - https://github.com/awkward/react-simple-masonry#readme
  * MIT Licensed
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -90,7 +90,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    gutter: _react2['default'].PropTypes.number,
 	    gutterX: _react2['default'].PropTypes.number,
 	    gutterY: _react2['default'].PropTypes.number,
-	    maxHeight: _react2['default'].PropTypes.number
+	    maxHeight: _react2['default'].PropTypes.number,
+	    collapsing: _react2['default'].PropTypes.bool
 	  },
 
 	  getDefaultProps: function getDefaultProps() {
@@ -98,7 +99,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      columns: 15,
 	      width: 980,
 	      gutter: 15,
-	      maxHeight: 0
+	      maxHeight: 0,
+	      collapsing: true
 	    };
 	  },
 
@@ -122,7 +124,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      gutter: this.props.gutter,
 	      gutterX: this.props.gutterX,
 	      gutterY: this.props.gutterY,
-	      maxHeight: this.props.maxHeight
+	      maxHeight: this.props.maxHeight,
+	      collapsing: this.props.collapsing
 	    });
 
 	    var childNodes = _react2['default'].Children.map(this.props.children, function (el, i) {
@@ -18630,12 +18633,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  options.columns = options.columns || 3
 	  options.maxHeight = options.maxHeight || 0
 
+	  if (typeof options.collapsing === 'undefined') {
+	    options.collapsing = true
+	  }
+
 	  return options.dimensions
 	    .map(LayoutEngine.__scaleRectangles(options.columns, options.width, options.gutterX, options.maxHeight))
-	    .map(LayoutEngine.__translateRectanglesForNColumns(options.columns, options.width, options.gutterX, options.gutterY))
+	    .map(LayoutEngine.__translateRectanglesForNColumns(options.columns, options.width, options.gutterX, options.gutterY, options.collapsing))
 	}
 
-	LayoutEngine.__translateRectanglesForNColumns = function (numColumns, totalWidth, gutterX, gutterY) {
+	LayoutEngine.__translateRectanglesForNColumns = function (numColumns, totalWidth, gutterX, gutterY, collapsing) {
 	  /* Translate rectangles into position */
 
 	  return function (rectangle, i, allRects) {
@@ -18645,14 +18652,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return rectangle
 	    } else if (i < numColumns) {
 	      // first row
-	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, LayoutEngine.__widthSingleColumn(numColumns, totalWidth, gutterX) * i + gutterX * i, 0, gutterY)
-	      rectangle.flagged = false
+	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, (LayoutEngine.__widthSingleColumn(numColumns, totalWidth, gutterX) * i) + (gutterX * i), 0)
 	      return rectangle
 	    } else {
-	      // place rects
-	      var placeAfter = LayoutEngine.__placeAfterRectangle(allRects)
-	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, placeAfter.x, (placeAfter.height + placeAfter.y), gutterY)
-	      placeAfter.flagged = true
+	      // Pass array of all previous rectangles, give back leading rectangle
+	      if (collapsing) {
+	        var placeAfter = LayoutEngine.__placeAfterRectangle(allRects.slice(0, i), gutterY, collapsing, numColumns, i)
+	      } else {
+	        // only use the rectangles from te previous row
+	        var placeAfter = LayoutEngine.__placeAfterRectangle(allRects.slice(0, i - i % numColumns), gutterY, collapsing, numColumns, i)
+	      }
+	      rectangle = LayoutEngine.__placeRectangleAt(rectangle, placeAfter.x, (placeAfter.height))
 	      return rectangle
 	    }
 	  }
@@ -18677,31 +18687,85 @@ return /******/ (function(modules) { // webpackBootstrap
 	      width: Math.floor(width),
 	      height: Math.floor(height),
 	      x: 0,
-	      y: 0,
-	      flagged: true,
-	    }  
+	      y: 0
+	    }
 	  }
 	}
 
-	LayoutEngine.__placeRectangleAt = function (rectangle, x, y, gutterY) {
-	  if (y) y += gutterY
-
-	  return Object.assign(rectangle, {x: x, y: y, flagged: false})
+	LayoutEngine.__placeRectangleAt = function (rectangle, x, y) {
+	  return Object.assign(rectangle, {x: x, y: y})
 	}
 
-	/* Takes in a group of Rectangles and return the 'leading' rectangle */
-	LayoutEngine.__placeAfterRectangle = function (rectArray) {
-	  return rectArray
-	    .filter(function(r) {
-	      return !(r.flagged)
-	    })
-	    .reverse()
-	    .reduce(function(prev, curr) {
-	      if (prev) {
-	        if (prev.height + prev.y < curr.height + curr.y) return prev
+	LayoutEngine.__rectanglesToColumns = function (rectArray, gutterY) {
+	  // reduce rectangles into larger column sized rectangles
+
+	  function findValue (match) {
+	    return function (value) {
+	      return (value === match)
+	    }
+	  }
+
+	  var xValues = rectArray
+	    .reduce(function (values, rectangle, i, array) {
+	      if (!~values.findIndex(findValue(rectangle.x))) {
+	        values.push(rectangle.x)
 	      }
-	      return curr
-	    })
+	      return values
+	    }, [])
+
+	  var columns = rectArray
+	    .reduce(function (rectangles, rectangle, i, array) {
+
+	      var index = xValues.findIndex(findValue(rectangle.x))
+
+	      if (rectangles[index]) {
+	        rectangles[index]['height'] = rectangle.y + rectangle.height + gutterY
+	      } else {
+	        // start new column
+	        rectangles[index] = Object.assign({}, rectangle)
+	        rectangles[index]['height'] += gutterY
+	      }
+
+	      return rectangles
+
+	    }, [])
+
+	  return columns
+	}
+
+	LayoutEngine.__placeAfterRectangle = function (rectArray, gutterY, collapsing, numColumns, index) {
+
+	  var columns = LayoutEngine.__rectanglesToColumns(rectArray, gutterY)
+
+	  var columnsByHeightAsc = columns.sort(function (columnA, columnB) {
+	    return columnA.height - columnB.height
+	  }).map(function (r) {
+	    return Object.assign({}, r)
+	  })
+
+	  var columnsByHeightDesc = columns.sort(function (columnA, columnB) {
+	    return columnB.height - columnA.height
+	  }).map(function (r) {
+	    return Object.assign({}, r)
+	  })
+
+	  var columnsByXDesc = columns.sort(function (columnA, columnB) {
+	    return columnA.x - columnB.x
+	  }).map(function (r) {
+	    return Object.assign({}, r)
+	  })
+
+	  if (collapsing) {
+	    // return the smallest column
+	    return columnsByHeightAsc[0]
+	  } else {
+	    return {
+	      x: columns[(index % numColumns)]['x'],
+	      y: 0,
+	      width: columnsByHeightDesc[(index % numColumns)]['width'],
+	      height: columnsByHeightDesc[0]['height']
+	    }
+	  }
 	}
 
 	LayoutEngine.__widthSingleColumn = function (numColumns, totalWidth, gutter) {
