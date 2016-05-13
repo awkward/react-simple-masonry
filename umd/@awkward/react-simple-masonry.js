@@ -1,5 +1,5 @@
 /*!
- * @awkward/react-simple-masonry 0.5.0 - https://github.com/awkward/react-simple-masonry#readme
+ * @awkward/react-simple-masonry 0.5.1 - https://github.com/awkward/react-simple-masonry#readme
  * MIT Licensed
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -18769,6 +18769,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	LayoutEngine.__widthSingleColumn = function (numColumns, totalWidth, gutter) {
+	  totalWidth += gutter
+
 	  return (totalWidth / numColumns) - gutter
 	}
 
