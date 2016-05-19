@@ -2,21 +2,26 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import LayoutEngine from 'simple-masonry-layout'
 
-export default React.createClass({
+export default class MasonryLayout extends React.Component {
 
-  displayName: 'MasonryLayout',
+  constructor () {
+    super()
+    this.displayName = 'MasonryLayout'
+  }
 
-  propTypes: {
-    columns: React.PropTypes.number,
-    width: React.PropTypes.number,
-    gutter: React.PropTypes.number,
-    gutterX: React.PropTypes.number,
-    gutterY: React.PropTypes.number,
-    maxHeight: React.PropTypes.number,
-    collapsing: React.PropTypes.bool
-  },
+  static get propTypes () {
+    return {
+      columns: React.PropTypes.number,
+      width: React.PropTypes.number,
+      gutter: React.PropTypes.number,
+      gutterX: React.PropTypes.number,
+      gutterY: React.PropTypes.number,
+      maxHeight: React.PropTypes.number,
+      collapsing: React.PropTypes.bool
+    }
+  }
 
-  getDefaultProps: function () {
+  static get defaultProps () {
     return {
       columns: 15,
       width: 980,
@@ -24,12 +29,51 @@ export default React.createClass({
       maxHeight: 0,
       collapsing: true
     }
-  },
+  }
 
   /* Returns an array of rectangles which can be used to map to child elements */
-  calculateRectangles: function (dimensions, numColumns, totalWidth, gutter, gutterX, gutterY) {
+  calculateRectangles (dimensions, numColumns, totalWidth, gutter, gutterX, gutterY) {
     return LayoutEngine.generateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY)
-  },
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    // recalculate dimensions
+    const refs = Object.keys(this.refs)
+      .filter(key => /block/.test(key))
+      .map(key => this.refs[key])
+    const dimensions = refs.map((ref) => ({ width: ref.props['original-width'], height: ref.props['original-height'] }))
+
+    const rectangles = this.calculateRectangles({
+      dimensions,
+      ...nextProps
+    })
+
+    refs.forEach((ref, i) => {
+      const node = ReactDOM.findDOMNode(ref)
+      const rectangle = rectangles[i]
+
+      node.style.transform = `translate3d(${rectangle.x}px, ${rectangle.y}px, 0)`
+      node.style.width = `${rectangle.width}px`
+      node.style.height = `${rectangle.height}px`
+      node.style.position = 'absolute'
+      node.style.top = 0
+      node.style.left = 0
+    })
+
+    let height = 0
+
+    if (rectangles.length) {
+      height = rectangles
+        .map((r) => r.height + r.y)
+        .sort((r1, r2) => (r2 - r1))[0]
+    }
+
+    const wrapper = ReactDOM.findDOMNode(this.refs.wrapper)
+    wrapper.style.width = `${nextProps.width}px`
+    wrapper.style.height = `${height}px`
+
+    return false
+  }
 
   render() {
     const dimensions = React.Children.map(this.props.children, (el, i) => {
@@ -41,13 +85,7 @@ export default React.createClass({
 
     const rectangles = this.calculateRectangles({ 
       dimensions, 
-      columns: this.props.columns, 
-      width: this.props.width, 
-      gutter: this.props.gutter, 
-      gutterX: this.props.gutterX, 
-      gutterY: this.props.gutterY,
-      maxHeight: this.props.maxHeight,
-      collapsing: this.props.collapsing
+      ...this.props
     })
 
     const childNodes = React.Children.map(this.props.children, (el, i) => {
@@ -55,6 +93,7 @@ export default React.createClass({
 
       return React.cloneElement(el, {
         key: i,
+        ref: `block-${i}`,
         ...rectangle
       })
     })
@@ -68,7 +107,7 @@ export default React.createClass({
     }
 
     return (
-      <div style={{ width: `${this.props.width}px`, height: `${height}px`, position: 'relative' }}>{childNodes}</div>
+      <div ref='wrapper' style={{ width: `${this.props.width}px`, height: `${height}px`, position: 'relative' }}>{childNodes}</div>
     )
   }
-})
+}
