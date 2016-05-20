@@ -22,8 +22,7 @@ export default class Block extends React.Component {
           top: 0,
           left: 0,
           border: `1px solid`,
-          transition: 'all .2s',
-          transitionDelay: '.2s'
+          transition: 'all .2s'
         }}
       >
 
