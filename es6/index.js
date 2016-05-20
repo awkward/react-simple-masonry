@@ -36,48 +36,58 @@ var MasonryLayout = (function (_React$Component) {
     value: function shouldComponentUpdate(nextProps, nextState) {
       var _this = this;
 
-      // recalculate dimensions
-      var refs = Object.keys(this.refs).filter(function (key) {
-        return (/block/.test(key)
-        );
-      }).map(function (key) {
-        return _this.refs[key];
-      });
-      var dimensions = refs.map(function (ref) {
-        return { width: ref.props['original-width'], height: ref.props['original-height'] };
-      });
+      if (this.props.children.length !== nextProps.children.length) {
+        return true;
+      } else {
+        var _ret = (function () {
+          // recalculate dimensions
+          var refs = Object.keys(_this.refs).filter(function (key) {
+            return (/block/.test(key)
+            );
+          }).map(function (key) {
+            return _this.refs[key];
+          });
+          var dimensions = refs.map(function (ref) {
+            return { width: ref.props['original-width'], height: ref.props['original-height'] };
+          });
 
-      var rectangles = this.calculateRectangles(_extends({
-        dimensions: dimensions
-      }, nextProps));
+          var rectangles = _this.calculateRectangles(_extends({
+            dimensions: dimensions
+          }, nextProps));
 
-      refs.forEach(function (ref, i) {
-        var node = ReactDOM.findDOMNode(ref);
-        var rectangle = rectangles[i];
+          refs.forEach(function (ref, i) {
+            var node = ReactDOM.findDOMNode(ref);
+            var rectangle = rectangles[i];
 
-        node.style.transform = 'translate3d(' + rectangle.x + 'px, ' + rectangle.y + 'px, 0)';
-        node.style.width = rectangle.width + 'px';
-        node.style.height = rectangle.height + 'px';
-        node.style.position = 'absolute';
-        node.style.top = 0;
-        node.style.left = 0;
-      });
+            node.style.transform = 'translate3d(' + rectangle.x + 'px, ' + rectangle.y + 'px, 0)';
+            node.style.width = rectangle.width + 'px';
+            node.style.height = rectangle.height + 'px';
+            node.style.position = 'absolute';
+            node.style.top = 0;
+            node.style.left = 0;
+          });
 
-      var height = 0;
+          var height = 0;
 
-      if (rectangles.length) {
-        height = rectangles.map(function (r) {
-          return r.height + r.y;
-        }).sort(function (r1, r2) {
-          return r2 - r1;
-        })[0];
+          if (rectangles.length) {
+            height = rectangles.map(function (r) {
+              return r.height + r.y;
+            }).sort(function (r1, r2) {
+              return r2 - r1;
+            })[0];
+          }
+
+          var wrapper = ReactDOM.findDOMNode(_this.refs.wrapper);
+          wrapper.style.width = nextProps.width + 'px';
+          wrapper.style.height = height + 'px';
+
+          return {
+            v: false
+          };
+        })();
+
+        if (typeof _ret === 'object') return _ret.v;
       }
-
-      var wrapper = ReactDOM.findDOMNode(this.refs.wrapper);
-      wrapper.style.width = nextProps.width + 'px';
-      wrapper.style.height = height + 'px';
-
-      return false;
     }
   }, {
     key: 'render',
