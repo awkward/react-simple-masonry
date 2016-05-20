@@ -1,6 +1,6 @@
 {
   "name": "@awkward/react-simple-masonry",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "react-simple-masonry React component",
   "main": "lib/index.js",
   "jsnext:main": "es6/index.js",
