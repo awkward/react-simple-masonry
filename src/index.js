@@ -36,50 +36,6 @@ export default class MasonryLayout extends React.Component {
     return LayoutEngine.generateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY)
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
-
-    if (this.props.children.length !== nextProps.children.length) {
-      return true
-    } else {
-      // recalculate dimensions
-      const refs = Object.keys(this.refs)
-        .filter(key => /block/.test(key))
-        .map(key => this.refs[key])
-      const dimensions = refs.map((ref) => ({ width: ref.props['original-width'], height: ref.props['original-height'] }))
-
-      const rectangles = this.calculateRectangles({
-        dimensions,
-        ...nextProps
-      })
-
-      refs.forEach((ref, i) => {
-        const node = ReactDOM.findDOMNode(ref)
-        const rectangle = rectangles[i]
-
-        node.style.transform = `translate3d(${rectangle.x}px, ${rectangle.y}px, 0)`
-        node.style.width = `${rectangle.width}px`
-        node.style.height = `${rectangle.height}px`
-        node.style.position = 'absolute'
-        node.style.top = 0
-        node.style.left = 0
-      })
-
-      let height = 0
-
-      if (rectangles.length) {
-        height = rectangles
-          .map((r) => r.height + r.y)
-          .sort((r1, r2) => (r2 - r1))[0]
-      }
-
-      const wrapper = ReactDOM.findDOMNode(this.refs.wrapper)
-      wrapper.style.width = `${nextProps.width}px`
-      wrapper.style.height = `${height}px`
-
-      return false
-    }
-  }
-
   render() {
     const dimensions = React.Children.map(this.props.children, (el, i) => {
       return {
