@@ -28,16 +28,16 @@ var MasonryLayout = (function (_React$Component) {
     key: 'calculateRectangles',
 
     /* Returns an array of rectangles which can be used to map to child elements */
-    value: function calculateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY) {
-      return LayoutEngine.generateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY);
+    value: function calculateRectangles(options) {
+      return LayoutEngine.generateRectangles(options);
     }
   }, {
     key: 'render',
     value: function render() {
-      var dimensions = React.Children.map(this.props.children, function (el, i) {
+      var dimensions = React.Children.map(this.props.children, function (child, i) {
         return {
-          width: el.props['original-width'],
-          height: el.props['original-height']
+          width: child.props['original-width'],
+          height: child.props['original-height']
         };
       });
 
@@ -80,7 +80,9 @@ var MasonryLayout = (function (_React$Component) {
         gutterX: React.PropTypes.number,
         gutterY: React.PropTypes.number,
         maxHeight: React.PropTypes.number,
-        collapsing: React.PropTypes.bool
+        collapsing: React.PropTypes.bool,
+        customize: React.PropTypes.func,
+        centering: React.PropTypes.bool
       };
     }
   }, {
@@ -91,7 +93,9 @@ var MasonryLayout = (function (_React$Component) {
         width: 980,
         gutter: 15,
         maxHeight: 0,
-        collapsing: true
+        collapsing: true,
+        customize: null,
+        centering: false
       };
     }
   }]);

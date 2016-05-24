@@ -1,5 +1,5 @@
 /*!
- * @awkward/react-simple-masonry 0.5.4 - https://github.com/awkward/react-simple-masonry#readme
+ * @awkward/react-simple-masonry 0.6.0 - https://github.com/awkward/react-simple-masonry#readme
  * MIT Licensed
  */
 (function webpackUniversalModuleDefinition(root, factory) {
@@ -102,16 +102,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'calculateRectangles',
 
 	    /* Returns an array of rectangles which can be used to map to child elements */
-	    value: function calculateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY) {
-	      return _simpleMasonryLayout2['default'].generateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY);
+	    value: function calculateRectangles(options) {
+	      return _simpleMasonryLayout2['default'].generateRectangles(options);
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var dimensions = _react2['default'].Children.map(this.props.children, function (el, i) {
+	      var dimensions = _react2['default'].Children.map(this.props.children, function (child, i) {
 	        return {
-	          width: el.props['original-width'],
-	          height: el.props['original-height']
+	          width: child.props['original-width'],
+	          height: child.props['original-height']
 	        };
 	      });
 
@@ -154,7 +154,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        gutterX: _react2['default'].PropTypes.number,
 	        gutterY: _react2['default'].PropTypes.number,
 	        maxHeight: _react2['default'].PropTypes.number,
-	        collapsing: _react2['default'].PropTypes.bool
+	        collapsing: _react2['default'].PropTypes.bool,
+	        customize: _react2['default'].PropTypes.func,
+	        centering: _react2['default'].PropTypes.bool
 	      };
 	    }
 	  }, {
@@ -165,7 +167,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        width: 980,
 	        gutter: 15,
 	        maxHeight: 0,
-	        collapsing: true
+	        collapsing: true,
+	        customize: null,
+	        centering: false
 	      };
 	    }
 	  }]);
@@ -18653,17 +18657,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	  options.width = options.width || 800
 	  options.columns = options.columns || 3
 	  options.maxHeight = options.maxHeight || 0
+	  options.customize = options.customize || function (r) { return r }
 
 	  if (typeof options.collapsing === 'undefined') {
 	    options.collapsing = true
 	  }
 
+	  if (typeof options.centering === 'undefined') {
+	    options.centering = false
+	  }
+
 	  return options.dimensions
 	    .map(LayoutEngine.__scaleRectangles(options.columns, options.width, options.gutterX, options.maxHeight))
+	    .map(LayoutEngine.__prepareCustomize(options.customize, options))
 	    .map(LayoutEngine.__translateRectanglesForNColumns(options.columns, options.width, options.gutterX, options.gutterY, options.collapsing))
+	    .map(LayoutEngine.__centerRectangles(options.centering, options.columns, options.width, options.gutterX))
 	}
 
-	LayoutEngine.__translateRectanglesForNColumns = function (numColumns, totalWidth, gutterX, gutterY, collapsing) {
+	LayoutEngine.__prepareCustomize = function (customizeFunction, options) {
+	  return function (rectangle, i, allRects) {
+	    return customizeFunction(rectangle, i, allRects, options)
+	  }
+	}
+
+	LayoutEngine.__translateRectanglesForNColumns = function (numColumns, totalWidth, gutterX, gutterY, collapsing, centering) {
 	  /* Translate rectangles into position */
 
 	  return function (rectangle, i, allRects) {
@@ -18709,6 +18726,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	      height: Math.floor(height),
 	      x: 0,
 	      y: 0
+	    }
+	  }
+	}
+
+	LayoutEngine.__centerRectangles = function (centering, columns, width, gutterX) {
+	  var widthSingleColumn = LayoutEngine.__widthSingleColumn(columns, width, gutterX)
+	  return function (rectangle, i, allRects) {
+	    if (columns <= allRects.length || !centering) {
+	      // No need to center anything
+	      return rectangle
+	    } else {
+	      // Shift each rectangle
+	      rectangle.x += ((columns - allRects.length) * widthSingleColumn / 2) + ((columns - allRects.length) * gutterX / 2)
+	      return rectangle
 	    }
 	  }
 	}

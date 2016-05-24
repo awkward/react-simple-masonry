@@ -17,7 +17,9 @@ export default class MasonryLayout extends React.Component {
       gutterX: React.PropTypes.number,
       gutterY: React.PropTypes.number,
       maxHeight: React.PropTypes.number,
-      collapsing: React.PropTypes.bool
+      collapsing: React.PropTypes.bool,
+      customize: React.PropTypes.func,
+      centering: React.PropTypes.bool
     }
   }
 
@@ -27,25 +29,27 @@ export default class MasonryLayout extends React.Component {
       width: 980,
       gutter: 15,
       maxHeight: 0,
-      collapsing: true
+      collapsing: true,
+      customize: null,
+      centering: false
     }
   }
 
   /* Returns an array of rectangles which can be used to map to child elements */
-  calculateRectangles (dimensions, numColumns, totalWidth, gutter, gutterX, gutterY) {
-    return LayoutEngine.generateRectangles(dimensions, numColumns, totalWidth, gutter, gutterX, gutterY)
+  calculateRectangles (options) {
+    return LayoutEngine.generateRectangles(options)
   }
 
   render() {
-    const dimensions = React.Children.map(this.props.children, (el, i) => {
+    const dimensions = React.Children.map(this.props.children, (child, i) => {
       return {
-        width: el.props['original-width'],
-        height: el.props['original-height']
+        width: child.props['original-width'],
+        height: child.props['original-height']
       }
     })
 
-    const rectangles = this.calculateRectangles({ 
-      dimensions, 
+    const rectangles = this.calculateRectangles({
+      dimensions,
       ...this.props
     })
 
