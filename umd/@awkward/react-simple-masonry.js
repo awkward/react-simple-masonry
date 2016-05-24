@@ -155,7 +155,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        gutterY: _react2['default'].PropTypes.number,
 	        maxHeight: _react2['default'].PropTypes.number,
 	        collapsing: _react2['default'].PropTypes.bool,
-	        customize: _react2['default'].PropTypes.func
+	        customize: _react2['default'].PropTypes.func,
+	        centering: _react2['default'].PropTypes.bool
 	      };
 	    }
 	  }, {
@@ -167,7 +168,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        gutter: 15,
 	        maxHeight: 0,
 	        collapsing: true,
-	        customize: null
+	        customize: null,
+	        centering: false
 	      };
 	    }
 	  }]);

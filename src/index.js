@@ -18,7 +18,8 @@ export default class MasonryLayout extends React.Component {
       gutterY: React.PropTypes.number,
       maxHeight: React.PropTypes.number,
       collapsing: React.PropTypes.bool,
-      customize: React.PropTypes.func
+      customize: React.PropTypes.func,
+      centering: React.PropTypes.bool
     }
   }
 
@@ -29,7 +30,8 @@ export default class MasonryLayout extends React.Component {
       gutter: 15,
       maxHeight: 0,
       collapsing: true,
-      customize: null
+      customize: null,
+      centering: false
     }
   }
 

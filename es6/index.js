@@ -81,7 +81,8 @@ var MasonryLayout = (function (_React$Component) {
         gutterY: React.PropTypes.number,
         maxHeight: React.PropTypes.number,
         collapsing: React.PropTypes.bool,
-        customize: React.PropTypes.func
+        customize: React.PropTypes.func,
+        centering: React.PropTypes.bool
       };
     }
   }, {
@@ -93,7 +94,8 @@ var MasonryLayout = (function (_React$Component) {
         gutter: 15,
         maxHeight: 0,
         collapsing: true,
-        customize: null
+        customize: null,
+        centering: false
       };
     }
   }]);
