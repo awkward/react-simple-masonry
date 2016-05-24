@@ -21,10 +21,21 @@ let Demo = class Demo extends React.Component {
     })
   }
 
+  customizeRectangles (rectangle, i, allRectangles, options) {
+
+    const dimension = options.dimensions[i]
+
+    if (dimension.width < rectangle.width) {
+      rectangle.height += 80
+    }
+
+    return rectangle
+  }
+
   render() {
     return <div>
       <h1>simple-masonry-layout Demo</h1>
-      <Component width={this.state.width} columns={4} gutterX={20} gutterY={20} maxHeight={550} collapsing={true}>
+      <Component width={this.state.width} columns={4} gutterX={20} gutterY={20} maxHeight={550} collapsing={true} customize={this.customizeRectangles}>
 
         <Block original-width={300} original-height={900}>
             <div className="block"></div>
