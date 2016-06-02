@@ -58,7 +58,6 @@ export default class MasonryLayout extends React.Component {
 
       return React.cloneElement(el, {
         key: i,
-        ref: `block-${i}`,
         ...rectangle
       })
     })

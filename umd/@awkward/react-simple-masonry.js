@@ -123,8 +123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var rectangle = rectangles[i];
 
 	        return _react2['default'].cloneElement(el, _extends({
-	          key: i,
-	          ref: 'block-' + i
+	          key: i
 	        }, rectangle));
 	      });
 

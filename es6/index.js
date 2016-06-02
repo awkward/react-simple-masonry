@@ -49,8 +49,7 @@ var MasonryLayout = (function (_React$Component) {
         var rectangle = rectangles[i];
 
         return React.cloneElement(el, _extends({
-          key: i,
-          ref: 'block-' + i
+          key: i
         }, rectangle));
       });
 
